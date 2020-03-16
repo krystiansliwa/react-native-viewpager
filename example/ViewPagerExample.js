@@ -59,7 +59,7 @@ export default class ViewPagerExample extends React.Component<*, State> {
       },
       pages: pages,
       scrollState: 'idle',
-      dotsVisible: false,
+      dotsVisible: true,
     };
     this.viewPager = React.createRef();
   }
@@ -85,6 +85,24 @@ export default class ViewPagerExample extends React.Component<*, State> {
     this.setState(prevState => ({
       pages: [...prevState.pages, createPage(prevState.pages.length)],
     }));
+  };
+
+  deleteLastPage = () => {
+    const newPages = [...this.state.pages];
+    newPages.pop();
+    this.setState({pages: newPages});
+  };
+
+  deleteFirstPage = () => {
+    const newPages = [...this.state.pages];
+    newPages.splice(0, 1);
+    this.setState({pages: newPages});
+  };
+
+  deleteMultiple = () => {
+    const newPages = [...this.state.pages];
+    newPages.splice(0, 3);
+    this.setState({pages: newPages});
   };
 
   move = (delta: number) => {
@@ -117,7 +135,7 @@ export default class ViewPagerExample extends React.Component<*, State> {
   };
 
   render() {
-    const {page, pages, animationsAreEnabled, dotsVisible} = this.state;
+    const {page, pages, dotsVisible} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <ViewPager
@@ -137,39 +155,22 @@ export default class ViewPagerExample extends React.Component<*, State> {
           {pages.map(p => this.renderPage(p))}
         </ViewPager>
         <View style={styles.buttons}>
+          <Button enabled={true} text="Add" onPress={this.addPage} />
           <Button
             enabled={true}
-            text={
-              this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'
-            }
-            onPress={() =>
-              this.setState({scrollEnabled: !this.state.scrollEnabled})
-            }
+            text="del last"
+            onPress={this.deleteLastPage}
           />
           <Button
             enabled={true}
-            text={dotsVisible ? 'Hide dots' : 'Show dots'}
-            onPress={this.toggleDotsVisibility}
+            text="del first"
+            onPress={this.deleteFirstPage}
           />
-          <Button enabled={true} text="Add new page" onPress={this.addPage} />
-        </View>
-        <View style={styles.buttons}>
-          {animationsAreEnabled ? (
-            <Button
-              text="Turn off animations"
-              enabled={true}
-              onPress={() => this.setState({animationsAreEnabled: false})}
-            />
-          ) : (
-            <Button
-              text="Turn animations back on"
-              enabled={true}
-              onPress={() => this.setState({animationsAreEnabled: true})}
-            />
-          )}
-          <Text style={styles.scrollStateText}>
-            ScrollState[ {this.state.scrollState} ]
-          </Text>
+          <Button
+            enabled={true}
+            text="del multi"
+            onPress={this.deleteMultiple}
+          />
         </View>
         <View style={styles.buttons}>
           <Button text="Start" enabled={page > 0} onPress={() => this.go(0)} />
@@ -194,11 +195,6 @@ export default class ViewPagerExample extends React.Component<*, State> {
             {' '}
             Page {page + 1} / {pages.length}{' '}
           </Text>
-          <ProgressBar
-            numberOfPages={pages.length}
-            size={300}
-            progress={this.state.progress}
-          />
         </View>
       </SafeAreaView>
     );
